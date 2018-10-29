@@ -24,7 +24,7 @@ float screenFactor = 0.0;
 
 float dummy = 0;
 Ani callQueryTwitter;
-int callQueryTwitterTimeout = 20;
+int callQueryTwitterTimeout = 5;
 
 void setup() {       
 
@@ -66,25 +66,31 @@ public void onTriggerQuery() {
 
 void query() {
 
-  for (TrendingTopic tt : trendingTopics) {
-    List<Status> tt0 = queryTwitter(tt.keyword);
-    for (Status st : tt0) {
+  for (TrendingTopic tt : trendingTopics) {                // para un tt
+    println("tw query for: " + tt.keyword);
+    List<Status> list = queryTwitter(tt.keyword);           // busco los st   
+    println("list has: " + list.size());
+    
+    for (int i = list.size() - 1; i >= 0; i--) {                                //      
+      Status st = list.get(i);
       println(st.getId());
+      if (tt.isNewStatus(st)) tt.addNewStatus(st);          // si hay uno nuevo lo agrego:
+    
     }
+    println("tt has: " + tt.list.size() + " statuses");
   }
 }
 
 void exit() {
   println("stoping");
-  //twitterStream.shutdown();
   String[] lines = (String[]) t.lines.toArray(new String[0]);
   saveStrings("lines.txt", lines);
   super.exit();
 } 
 
 void draw() {
-  background(random(255));
-  t.render(width/2, height/2, 200 * screenFactor);
+  background(127);  
+  t.render(trendingTopics.get(0).list);
 }
 
 void keyPressed() {
