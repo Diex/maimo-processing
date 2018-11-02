@@ -10,6 +10,7 @@ import org.gicentre.utils.spatial.Direction;    // For tooltip anchor direction.
 
 
 
+boolean DEBUG = false;
 
 Tractor t;
 ArrayList <TrendingTopic> trendingTopics;
@@ -57,7 +58,7 @@ public void itsStarted() {
 
 public void onTriggerQuery() {
   timesCalled++;
-  println("timesCalled: " + timesCalled);
+  if(DEBUG) println("timesCalled: " + timesCalled);
   callQueryTwitter = new Ani(this, callQueryTwitterTimeout, "dummy", 1.0, Ani.LINEAR, "onStart:itsStarted, onEnd:onTriggerQuery");
   query();
 }
@@ -66,20 +67,20 @@ public void onTriggerQuery() {
 
 void query() {
 
-  for (TrendingTopic tt : trendingTopics) {                // para un tt
-    println("tw query for: " + tt.keyword);
-    List<Status> list = queryTwitter(tt.keyword);           // busco los st   
-    println("list has: " + list.size());
-    
-    for (int i = list.size() - 1; i >= 0; i--) {                                //      
+  for (TrendingTopic tt : trendingTopics) {                
+    if(DEBUG) println("tw query for: " + tt.keyword);
+    List<Status> list = queryTwitter(tt.keyword);             
+    if(DEBUG) println("list has: " + list.size());    
+    for (int i = list.size() - 1; i >= 0; i--) {                 
       Status st = list.get(i);
-      println(st.getId());
-      if (tt.isNewStatus(st)) tt.addNewStatus(st);          // si hay uno nuevo lo agrego:
-    
+      if(DEBUG) println(st.getId());
+      if (tt.isNewStatus(st)) tt.addNewStatus(st);             
     }
+    //if(DEBUG) 
     println("tt has: " + tt.list.size() + " statuses");
   }
 }
+
 
 void exit() {
   println("stoping");

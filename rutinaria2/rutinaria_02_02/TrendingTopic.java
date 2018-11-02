@@ -16,7 +16,6 @@ public class TrendingTopic {
   }
 
   public void addNewStatus(Status st) {
-  
     if (list.size() >= maxQty) {
       list.remove(0);
     }

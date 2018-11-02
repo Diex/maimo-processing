@@ -2,7 +2,6 @@ import processing.core.*;
 import java.util.*;
 import twitter4j.*; 
 
-import org.gicentre.utils.stat.*;    // For chart classes.
 
 
 import org.gicentre.utils.gui.HelpScreen;
@@ -18,23 +17,22 @@ class Tractor {
   ArrayList<PVector> nodes = new ArrayList<PVector>();
   ArrayList<Tooltip> tips = new ArrayList<Tooltip>();
   ArrayList<String> lines = new ArrayList<String>();
-
+  public PVector position = new PVector(0, 0);
   float carrouselSpeed = 0.01f;
 
-  PFont smallFont;
-  PApplet parent;
-  BarChart barChart;
-  PVector position = new PVector(200, 200);
   
-  Tractor(PApplet pa, PFont font) {
+  
+  
+  
+  PApplet parent;
+  //TrendingTopic tt;
+  PFont smallFont;
+  
+  Tractor(PApplet pa, TrendingTopic tt) {
     this.parent = pa;
-    barChart = new BarChart(parent);
-    // Axis scaling
-    barChart.setMinValue(0);
-    barChart.setMaxValue(maxTweets);     
-    barChart.showValueAxis(true);
-    //barChart.showCategoryAxis(true);
-    smallFont = font;  
+    this.tt = tt;
+    
+    smallFont = parent.loadFont("Univers-Black-Normal-48.vlw");
     for (int i = 0; i < maxTweets; i++) {
       nodes.add(new PVector(parent.random(1.0f), parent.random(PConstants.TWO_PI)));  // radio y angulo inicial
     }
@@ -56,10 +54,8 @@ class Tractor {
 
 
 
-  public void render(ArrayList<Status> list) {
+  public void render() {
    // parent.println(list.size());
-    barChart.setData(new float[] {list.size(),0,0});
-    barChart.draw(position.x, position.y, 10, 100);
     parent.rect(position.x, position.y, 10, 10);
   }
 
