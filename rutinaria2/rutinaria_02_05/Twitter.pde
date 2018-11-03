@@ -33,8 +33,8 @@ void startTwitter() {
 
 ArrayList<Trend> trendingTopicsMO() {
   ArrayList <Trend> topFive = new ArrayList<Trend>();
-  
   for (int i = 0; i < 5; i++) {        
+    
         topFive.add(deserialize(sketchPath("./trends/")+"#90MinutosFOX.ser"));                
       }
   return topFive;
@@ -67,6 +67,9 @@ ArrayList<Trend> trendingTopics() {
 
   return topFive;
 }
+
+
+
 
 Trend deserialize(String fileName){
        Trend t =null;
@@ -108,7 +111,7 @@ void serialize(Trend t){
 List<Status> queryTwitter(String q, long lastId) {   
 
   Query query = new Query(q);   
-  query.setCount(30);  
+  query.setCount(TrendingTopic.MAX_BUFFER);  
   //getSince()
   query.setSinceId(lastId);
     
