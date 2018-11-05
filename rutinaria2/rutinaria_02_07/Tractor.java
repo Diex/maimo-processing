@@ -28,7 +28,7 @@ class Tractor {
 
 
   float alpha = 0.0f;
-  float size = 50;
+  float size = 100;
 
   Tooltip tip;
 
@@ -39,6 +39,8 @@ class Tractor {
 
 
     tip = new Tooltip(pa, smallFont, 14, 300);
+    tip.setBackgroundColour(parent.color(245,239,44));
+    tip.setTextColour(0);
     tip.setAnchor(Direction.SOUTH_WEST);
     tip.setIsCurved(true);
     tip.showPointer(true);
@@ -48,7 +50,7 @@ class Tractor {
 
 
   public void render() {
-    alpha += carrouselSpeed*tt.load()*tt.direction();
+    alpha += carrouselSpeed * tt.load() * tt.direction();
 
     parent.pushStyle();
     parent.rectMode(PConstants.CENTER);
@@ -67,29 +69,32 @@ class Tractor {
     
     parent.pushMatrix();
     parent.rotate(alpha);
-
-    for (int tweet = 0; tweet < tt.list.size(); tweet++) {      
-      TweetView st = tt.list.get(tweet);      
-      parent.ellipse(st.pos.x * size, st.pos.y* size, 0.1f*size, 0.1f*size);
-      parent.stroke(127, 127);
-      parent.line(st.pos.x* size, st.pos.y* size, 0, 0);
-    }
-
-    parent.noFill();
-    parent.stroke(255, 0, 0);    
-    parent.ellipse(0, 0, tt.load() * 4 * size, tt.load() * 4 * size);
-    parent.popMatrix();
+    
+    renderTweets();
+  
+    renderTractorInfluence();
+    
     
     TweetView one = getTweet();
     if (one != null) {
       tip.setText(one.st.getText());
+      parent.rotateZ(-currentZ);
+      parent.rotateX(-parent.radians(80));
       tip.draw(one.pos.x * size, one.pos.y * size);
     }
     parent.popMatrix();
     parent.popStyle();
   }
 
-
+float currentZ = 0;
+  void setZrotation(float z){
+    currentZ = z;
+  }
+  
+  
+  int getColor(int[] col){
+    return parent.color(col[0], col[1], col[2], col[3]);
+  }
   TweetView currentDisplay;
 
   public TweetView getTweet() {
@@ -98,5 +103,35 @@ class Tractor {
     if (parent.random(1000) < 4) currentDisplay = tt.list.get((int) parent.random(tt.list.size()));
 
     return currentDisplay;
+  }
+  
+  void renderTweets(){
+     for (int tweet = 0; tweet < tt.list.size(); tweet++) {      
+      TweetView st = tt.list.get(tweet);            
+      parent.pushMatrix();
+      parent.pushStyle();
+      //parent.fill(getColor(st.fill));
+      parent.fill(getColor(st.stroke)); parent.sphereDetail(10);
+      //parent.stroke(getColor(st.stroke)); parent.strokeWeight(0.1f);
+      parent.noStroke();
+      parent.translate(st.pos.x * size, st.pos.y* size,st.pos.z* size); 
+      parent.sphere(st.radius*size*0.1f);
+      parent.popStyle();
+      parent.popMatrix();
+
+      // TODO darle vida
+      parent.stroke(127, 127);
+      parent.line(st.pos.x* size, st.pos.y* size, st.pos.z* size, 0, 0,0);
+      
+    }
+   
+  }
+  
+  void renderTractorInfluence(){
+    parent.noFill();
+    parent.stroke(255, 0, 0);    
+    parent.ellipse(0, 0, tt.load() * 4 * size, tt.load() * 4 * size);
+    parent.popMatrix();
+    
   }
 }

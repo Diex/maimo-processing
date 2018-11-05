@@ -1,7 +1,10 @@
+import grafica.*;
+
 import de.looksgood.ani.*;
 import de.looksgood.ani.easing.*;
 
 import java.util.*;  
+import java.lang.Object;
 
 
 import org.gicentre.utils.gui.HelpScreen;
@@ -19,13 +22,15 @@ String session = "";
 // hay siempre 5 y pueden cambiar de keyword
 ArrayList <TrendingTopic> trendingTopics;
 ArrayList <Trend> trendsActuales;
+int maxTrends = 5;
+
 
 
 // Tractors
 // los tractors son las prepresentaciones de los trending topics
 // para cada trending topic hay un tracto que lo muestra en pantalla
 ArrayList<Tractor> tractors;
-ArrayList<Tooltip> tooltips;
+
 
 // Callbacks
 float query = 0.0;  // ani
@@ -43,16 +48,6 @@ PFont largeFont, smallFont;
 float screenFactor = 0.0;
 
 
-
-
-BarChart barChart;
-XYChart lineChart;
-
-
-float [] xsamples = new float[1000];
-
-
-
 void setup() {       
 
   size(1200, 600, P3D);
@@ -67,27 +62,23 @@ void setup() {
   startTwitter();
 
   trendsActuales = trendingTopics();
-  //trendsActuales = trendingTopicsMO();
-
   trendingTopics = new ArrayList<TrendingTopic>();
   tractors = new ArrayList<Tractor>();
-  //tooltips = new ArrayList<Tooltip>();
 
   float alpha = 0;
-  float radius = 200;
-  float angle = TWO_PI/5.0;
+  float radius = 300;
+  float angle = TWO_PI/maxTrends;
 
-  for (int trend = 0; trend < 5; trend ++) {
+  for (int trend = 0; trend < maxTrends; trend ++) {
     try {      
       TrendingTopic t = new TrendingTopic(trendsActuales.get(trend));
-      trendingTopics.add(t);
+      trendingTopics.add(t);      
+      // ubico los tractos formando un pentagono
       PVector vertex = new PVector(radius * cos(alpha), radius * sin(alpha));
       Tractor tr = new Tractor(this, t);
       tr.position = vertex;
       tractors.add(tr);
-
-      alpha += angle;    
-
+      alpha += angle;
     }
     catch (NullPointerException e) {
       //  todo: log
@@ -96,115 +87,51 @@ void setup() {
     }
   }
 
-
-
-
   onTriggerQuery();
   onTriggerClearTopics();
-
-  barChart = new BarChart(this);
-  barChart.setMinValue(0);
-  barChart.setMaxValue(1.0);     
-  barChart.showValueAxis(true);
-  barChart.showCategoryAxis(true);
-
-  lineChart = new XYChart(this);
-  for (int i = 0; i < 1000; i++) {
-    xsamples[i] = i;
-  }
-
-  // Axis formatting and labels.
-  lineChart.showXAxis(true); 
-  lineChart.showYAxis(true); 
-  lineChart.setMinY(0);
-  lineChart.setMaxY(TrendingTopic.MAX);
-
-  lineChart.setYFormat("###,###");  // Monetary value in $US
-  lineChart.setXFormat("0000");      // Year
-
-  // Symbol colours
-  lineChart.setPointColour(color(180, 50, 50, 100));
-  lineChart.setPointSize(1);
-  lineChart.setLineWidth(1);
+  setupGraph();
 } 
 
 
 
-
-
-
-
 void draw() {
-  background(255);  
+  background(0);  
 
   //updateSerial();
 
   // generate data
-  float values[] = new float[trendingTopics.size()];
-  String labels[] = new String[trendingTopics.size()];    
-
-  float history [] = new float[1000];
-
-  for (int i = 0; i < values.length; i++) {
-    TrendingTopic tt = trendingTopics.get(i);
-    tt.update();
-    values[i] = tt.load();
-    labels[i] = tt.label();
-    if (i == 0) {
-      System.arraycopy(tt.count, 0, history, 0, 1000);
-    }
-  }
-
-  lineChart.setData(xsamples, history);
-  // --------------------------------------------------
-  // --------------------------------------------------
+  updateGraphData(trendingTopics);
   // visualization
-  pushMatrix();
-  scale(0.5);
-  translate(100, 100);
-  barChart.setBarLabels(labels);
-  barChart.setData(values);  
-  textSize(textSize);
-
-  float heightSpace = height/4;
-  barChart.draw(0, 0, width/2, heightSpace);  
-  // barra
-  fill(255, 0, 0);
-  noStroke();
-  rect(0, heightSpace + 10, width/2 * query, 2);  
-  lineChart.draw(0, heightSpace+50, width/2, heightSpace);  
-  popMatrix();
-  
-  // --------------------------------------------------
-  // --------------------------------------------------
+  renderGraphData();
 
   // pentagon
   pushMatrix();
-  translate(width/2, height/2);
-  
+  translate(width/2, height/2, -100);
+  rotateX(radians(80));
+  rotateZ(frameCount*0.00005);
+
+
   
   pushStyle();
   beginShape();
-  stroke(0);
-  strokeWeight(1); 
-  noFill();
+  stroke(255);  strokeWeight(3); 
+  fill(255, 50);
   for (int tractor = 0; tractor < tractors.size(); tractor++) {
-    Tractor t = tractors.get(tractor);        
+    Tractor t = tractors.get(tractor);
+    t.setZrotation(frameCount*0.00005);
     vertex(t.position.x, t.position.y);
-    
   }
-  
-  
   endShape(CLOSE);
   popStyle();
   
+  lights();
   for (int tractor = 0; tractor < tractors.size(); tractor++) {
     Tractor t = tractors.get(tractor);        
-    t.render();    
+    t.render();
   }
-  
-  
-  
+
+
+
   popMatrix();
 
 
