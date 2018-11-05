@@ -14,7 +14,7 @@ import org.gicentre.utils.stat.*;    // For chart classes.
 
 
 boolean DEBUG = false;
-boolean useMotors = false;
+boolean useMotors = true;
 String session = ""; 
 
 // trendingTopics
@@ -97,8 +97,7 @@ void setup() {
 void draw() {
   background(0);  
 
-  //updateSerial();
-
+  
   // generate data
   updateGraphData(trendingTopics);
   // visualization
@@ -181,18 +180,19 @@ void clearTopics() {
     tt.removeOne();
   }
 
-  if (useMotors) {
-    float value = trendingTopics.get(1).load();
-    if (value > 0.25) {
-      float speed = map(value, 0.25, 1.0, 30, 100);
-      port.write("1:"+ (int) speed +'\n');                        // Write the angle to the serial port
-    }
-  }
+  //if (useMotors) {
+  //  float value = trendingTopics.get(1).load();
+  //  if (value > 0.25) {
+  //    float speed = map(value, 0.25, 1.0, 30, 100);
+  //    port.write("1:"+ (int) speed +'\n');                        // Write the angle to the serial port
+  //  }
+  //}
 }
 
 
 void searchTweetsForTt() {
 
+  int motor = 0;
   for (TrendingTopic tt : trendingTopics) {                
     println("search for: " + tt.trend.getQuery());
     List<Status> results = queryTwitter(tt.trend.getQuery(), tt.lastId());   
@@ -201,6 +201,10 @@ void searchTweetsForTt() {
     for (int i = results.size() - 1; i >= 0; i--) {                 
       tt.addNewStatus(results.get(i));
     }
+    
+    if(useMotors) updateMotor(motor+1, tt.load(), tt.direction()); // los motores estan desde 1
+    motor++;
+    
   }
 }
 

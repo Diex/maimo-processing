@@ -4,7 +4,7 @@ import processing.core.*;
 
 public class TrendingTopic {
   
-  public static final int MAX = 1000;
+  public static final int MAX = 250;
   public static final int MAX_BUFFER = 50;
   static final int TOTAL_SAMPLES = 1000;
   public int totalCount = 0;
@@ -26,7 +26,7 @@ public class TrendingTopic {
   float prevLoad = 0;
   float f = 0.15f;
   
-  float direction = -1;
+  float direction = 1;
   
   
   public TrendingTopic(Trend trend) {
