@@ -14,7 +14,7 @@ import org.gicentre.utils.stat.*;    // For chart classes.
 
 
 boolean DEBUG = false;
-boolean useMotors = true;
+boolean useMotors = false;
 String session = ""; 
 
 // trendingTopics
@@ -43,21 +43,20 @@ float callClearTopicsTimeout = 5;
 
 
 
-float textSize = 12;
+float textSize = 20;
 PFont largeFont, smallFont;
 float screenFactor = 0.0;
-
+float alpha = 0;
+float radius = 600;
 
 void setup() {       
-
   size(1920, 1080, P3D);
   screenFactor = 1920 / width;
-  smallFont = loadFont("Monospaced-48.vlw");
+  smallFont = loadFont("Univers-Black-Normal-48.vlw");
   if (useMotors) setupSerial();
   Ani.init(this);
 
   for (int c = 0; c < 8; c++) session+= (char) random(65, 90);
-
 
   startTwitter();
 
@@ -65,8 +64,6 @@ void setup() {
   trendingTopics = new ArrayList<TrendingTopic>();
   tractors = new ArrayList<Tractor>();
 
-  float alpha = 0;
-  float radius = 300;
   float angle = TWO_PI/maxTrends;
 
   for (int trend = 0; trend < maxTrends; trend ++) {
@@ -90,42 +87,33 @@ void setup() {
   onTriggerQuery();
   onTriggerClearTopics();
   setupGraph();
+  noCursor();
 } 
 
 
+float zRotation;
 
 void draw() {
   background(0);  
+  textFont(smallFont);
 
-  
+
   // generate data
   updateGraphData(trendingTopics);
   // visualization
   renderGraphData();
 
-  // pentagon
   pushMatrix();
   translate(width/2, height/2, -100);
   rotateX(radians(80));
-  rotateZ(frameCount*0.00005);
+  zRotation = frameCount*0.00005;   
+  rotateZ(zRotation);
 
+  // pentagon
+  renderPentagon();
 
-  
-  pushStyle();
-  beginShape();
-  stroke(255);  strokeWeight(3); 
-  fill(255, 50);
   for (int tractor = 0; tractor < tractors.size(); tractor++) {
     Tractor t = tractors.get(tractor);
-    t.setZrotation(frameCount*0.00005);
-    vertex(t.position.x, t.position.y);
-  }
-  endShape(CLOSE);
-  popStyle();
-  
-  lights();
-  for (int tractor = 0; tractor < tractors.size(); tractor++) {
-    Tractor t = tractors.get(tractor);        
     t.render();
   }
 
@@ -135,11 +123,26 @@ void draw() {
 
 
 
-  if (frameCount%450 == 0) saveFrame("d_"+session+"####.jpg");
+  //if (frameCount%450 == 0) saveFrame("d_"+session+"####.jpg");
 }
 
 
+void renderPentagon() {
 
+  pushStyle();
+  beginShape();
+  stroke(255);  
+  strokeWeight(4); 
+  noFill();
+  for (int tractor = 0; tractor < tractors.size(); tractor++) {
+    Tractor t = tractors.get(tractor);
+    t.setZrotation(zRotation);
+    vertex(t.position.x, t.position.y);
+  }
+  endShape(CLOSE);
+  popStyle();  
+  lights();
+}
 
 
 
@@ -201,17 +204,16 @@ void searchTweetsForTt() {
     for (int i = results.size() - 1; i >= 0; i--) {                 
       tt.addNewStatus(results.get(i));
     }
-    
-    if(useMotors) updateMotor(motor+1, tt.load(), tt.direction()); // los motores estan desde 1
+
+    if (useMotors) updateMotor(motor+1, tt.load(), tt.direction()); // los motores estan desde 1
     motor++;
-    
   }
 }
 
 
 void exit() {
   println("stoping");
-  if(usingMotors) closeConnection();
+  if (useMotors) closeConnection();
   super.exit();
 } 
 
