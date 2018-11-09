@@ -32,18 +32,30 @@ class Tractor {
 
   Tooltip tip;
 
+
+  
+  int lineColor;
+  int tipFillColor;
+  
   Tractor(PApplet pa, TrendingTopic tt) {
     this.parent = pa;
     this.tt = tt;
-    smallFont = parent.loadFont("Univers-Black-Normal-48.vlw");
+    smallFont = parent.loadFont("Dialog-48.vlw");
 
 
+      
+    lineColor = 255;
+    tipFillColor = pa.color(192,192,192,180);
+    
     tip = new Tooltip(pa, smallFont, 14, 300);
-    tip.setBackgroundColour(parent.color(245,239,44));
+    tip.setBackgroundColour(tipFillColor);
     tip.setTextColour(0);
     tip.setAnchor(Direction.SOUTH_WEST);
-    tip.setIsCurved(true);
+    tip.setIsCurved(false);
     tip.showPointer(true);
+    
+    
+  
   }
 
 
@@ -71,19 +83,52 @@ class Tractor {
     parent.rotate(alpha);
     
     renderTweets();
-  
     renderTractorInfluence();
+    renderStatusView();  
     
+    parent.pushStyle();
+    parent.fill(255);
+    parent.textSize(26);
+    parent.rotateZ(-currentZ);
+    parent.rotateX(-parent.radians(80));    
+    parent.textAlign(parent.CENTER);
+    parent.text(tt.trend.getName(), 0, 40);
+    parent.popStyle();
     
-    TweetView one = getTweet();
-    if (one != null) {
-      tip.setText(one.st.getText());
-      parent.rotateZ(-currentZ);
-      parent.rotateX(-parent.radians(80));
-      tip.draw(one.pos.x * size, one.pos.y * size);
-    }
     parent.popMatrix();
     parent.popStyle();
+  }
+  
+  
+  void renderStatusView(){
+      TweetView one = getTweet();
+    if (one != null) {
+      tip.setText(one.st.getText());
+      parent.pushMatrix(); 
+      parent.translate(one.pos.x * size, one.pos.y * size, one.pos.z * size);
+      parent.rotateZ(-currentZ);
+      parent.rotateX(-parent.radians(80));
+      //tip.draw(one.pos.x * size, one.pos.y * size);      
+      tip.draw(0,0);     
+      
+      
+      parent.pushStyle();
+      one.setImage(parent);
+      
+      parent.fill(255);
+      parent.imageMode(parent.CENTER);
+      if(one.getImage() != null) {
+        PImage img = one.getImage();        
+        parent.translate(-img.width, 0);
+        parent.image(img, 0, 0);
+      
+      }
+            
+      
+      parent.popStyle();
+       
+      parent.popMatrix();
+    }
   }
 
 float currentZ = 0;
@@ -110,12 +155,17 @@ float currentZ = 0;
       TweetView st = tt.list.get(tweet);            
       parent.pushMatrix();
       parent.pushStyle();
-      //parent.fill(getColor(st.fill));
-      parent.fill(getColor(st.stroke)); parent.sphereDetail(10);
-      //parent.stroke(getColor(st.stroke)); parent.strokeWeight(0.1f);
+      
+      parent.fill(getColor(st.fill)); parent.sphereDetail(10);
       parent.noStroke();
       parent.translate(st.pos.x * size, st.pos.y* size,st.pos.z* size); 
-      parent.sphere(st.radius*size*0.1f);
+      parent.sphere(st.radius*size*0.05f);
+       
+      
+       //st.setImage(parent);       
+       //if(st.getImage() != null) parent.image(st.getImage(), 0, 0);
+      
+      
       parent.popStyle();
       parent.popMatrix();
 

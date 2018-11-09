@@ -111,6 +111,8 @@ public class TrendingTopic {
     return trend.getName().length() > 10 ? trend.getName().toUpperCase().substring(0,10) : trend.getName().toUpperCase();
   }
   
+  
+  
   public int getMaxFavs(){
     int maxFavs = 0;    
     for(int tweet = 0; tweet < list.size(); tweet++){
@@ -120,12 +122,13 @@ public class TrendingTopic {
   }
   
   int maxRetweet = 200;
-   
+   // HACK....
    public int getMaxRt(){        
     for(int tweet = 0; tweet < list.size(); tweet++){
       maxRetweet = list.get(tweet).st.getRetweetCount() > maxRetweet ? list.get(tweet).st.getRetweetCount() : maxRetweet; 
     }
-    return maxRetweet;
+    return 100;
+    //return maxRetweet;
   }
   
   float direction(){

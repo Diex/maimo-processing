@@ -15,7 +15,7 @@ void setupGraph() {
   barChart.setMaxValue(1.0);     
   barChart.showValueAxis(true);
   barChart.showCategoryAxis(true);
-
+  barChart.setAxisLabelColour(255);
   //lineChart = new XYChart(this);
   xsamples = new float[TrendingTopic.TOTAL_SAMPLES];
   for (int i = 0; i < TrendingTopic.TOTAL_SAMPLES; i++) {
@@ -97,14 +97,16 @@ void updateGraphData(ArrayList<TrendingTopic> trending) {
 
 void renderGraphData() {
   pushMatrix();
-  scale(0.75);
+  //scale(0.75);
   translate(100, 100);
   barChart.setBarLabels(labels);
   barChart.setData(values);  
   textSize(textSize);
 
-  float heightSpace = height/4;
+  float heightSpace = height/6;
+  
   barChart.draw(0, 0, width/2, heightSpace);  
+  
   // barra
   fill(255, 0, 0);
   noStroke();
