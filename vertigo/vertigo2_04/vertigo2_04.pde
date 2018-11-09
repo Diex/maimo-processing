@@ -1,4 +1,11 @@
 OPC opc;
+import oscP5.*;
+import netP5.*;
+  
+OscP5 oscP5;
+NetAddress myRemoteLocation;
+
+
 
 void setup()
 {
@@ -11,10 +18,17 @@ void setup()
   }
   
   opc.ledStrip(384, 30, 64 * 6 + 32, height/2, 1, 0, false);
+    oscP5 = new OscP5(this,12000);
+  
+  myRemoteLocation = new NetAddress("127.0.0.1",12001);
+  
+
+
 }
 
 int pos = 0;
 int numLeds;
+
 void draw()
 {
   background(0);
@@ -26,6 +40,13 @@ void draw()
     
   drawFlare(pos);
 
+     /* in the following different ways of creating osc messages are shown by example */
+  OscMessage myMessage = new OscMessage("/test");
+  
+  myMessage.add((float) pos/numLeds); /* add an int to the osc message */
+
+  /* send the message */
+  oscP5.send(myMessage, myRemoteLocation);
 
 }
 
