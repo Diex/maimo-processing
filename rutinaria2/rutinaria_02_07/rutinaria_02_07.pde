@@ -50,7 +50,7 @@ float screenFactor = 0.0;
 
 void setup() {       
 
-  size(1200, 600, P3D);
+  size(1920, 1080, P3D);
   screenFactor = 1920 / width;
   smallFont = loadFont("Monospaced-48.vlw");
   if (useMotors) setupSerial();
@@ -211,6 +211,7 @@ void searchTweetsForTt() {
 
 void exit() {
   println("stoping");
+  if(usingMotors) closeConnection();
   super.exit();
 } 
 
