@@ -145,7 +145,7 @@ float currentZ = 0;
   public TweetView getTweet() {
     if (tt.list.size() == 0) return null;
     if (currentDisplay == null) currentDisplay = tt.list.get((int) parent.random(tt.list.size())); 
-    if (parent.random(1000) < 4) currentDisplay = tt.list.get((int) parent.random(tt.list.size()));
+    if (parent.random(1000) < 2) currentDisplay = tt.list.get((int) parent.random(tt.list.size()));
 
     return currentDisplay;
   }
